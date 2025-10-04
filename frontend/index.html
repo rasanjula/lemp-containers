@@ -1,0 +1,93 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Containerized LEMP Demo</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+    :root { --bg:#0f172a; --card:#111827; --text:#e5e7eb; --muted:#9ca3af; --accent:#22d3ee; --ok:#10b981; }
+    * { box-sizing: border-box; }
+    body {
+      margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+      background: radial-gradient(1200px 800px at 10% -10%, #0ea5e9 0%, rgba(14,165,233,0) 60%), var(--bg);
+      color: var(--text);
+    }
+    .wrap { max-width: 880px; margin: 48px auto; padding: 0 16px; }
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+      border: 1px solid rgba(255,255,255,0.08);
+      backdrop-filter: blur(6px);
+      border-radius: 18px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    }
+    h1 { margin: 0 0 12px; font-size: 28px; letter-spacing: .2px; }
+    p.muted { color: var(--muted); margin-top: 6px }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 20px; }
+    .tile { border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:16px; background:rgba(255,255,255,0.02) }
+    .label { font-size: 12px; text-transform: uppercase; color: var(--muted); letter-spacing: .8px }
+    .value { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 16px; margin-top: 6px }
+    .status { display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:999px; background:rgba(16,185,129,.12); color:#34d399; border:1px solid rgba(16,185,129,.25); font-size:12px }
+    .dot { width:8px; height:8px; border-radius:999px; background:var(--ok) }
+    .footer { margin-top:16px; font-size:12px; color:var(--muted) }
+    .accent { color: var(--accent) }
+    @media (max-width: 720px){ .row{ grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+        <h1>Containerized LEMP Demo</h1>
+        <span id="status" class="status"><span class="dot"></span> checking…</span>
+      </div>
+      <p class="muted">Nginx (frontend) → Flask (backend) → MySQL (database)</p>
+
+      <div class="row">
+        <div class="tile">
+          <div class="label">Backend Message</div>
+          <div id="msg" class="value accent">Loading…</div>
+        </div>
+        <div class="tile">
+          <div class="label">Server Time — Helsinki</div>
+          <div id="time-hel" class="value">Loading…</div>
+        </div>
+        <div class="tile">
+          <div class="label">Server Time — UTC</div>
+          <div id="time-utc" class="value">Loading…</div>
+        </div>
+        <div class="tile">
+          <div class="label">Last Updated</div>
+          <div id="updated" class="value">—</div>
+        </div>
+      </div>
+
+      <div class="footer">Auto-refresh every 30s • If Helsinki is empty, the backend is still updating.</div>
+    </div>
+  </div>
+
+  <script>
+    const $ = id => document.getElementById(id);
+    async function refresh() {
+      try {
+        const [apiRes, timeRes] = await Promise.all([
+          fetch("/api"), fetch("/api/time")
+        ]);
+        const api = await apiRes.json();
+        const tm = await timeRes.json();
+
+        $("msg").innerText = api.message ?? "—";
+        $("time-hel").innerText = tm.server_time_helsinki || "—";
+        $("time-utc").innerText = tm.server_time || "—";
+        $("status").innerHTML = '<span class="dot"></span> healthy';
+        $("updated").innerText = new Date().toLocaleString();
+      } catch (e) {
+        $("status").innerHTML = '<span class="dot" style="background:#ef4444"></span> error';
+        $("msg").innerText = "API error";
+        $("time-hel").innerText = "—";
+        $("time-utc").innerText = "—";
+      }
+    }
+    refresh();
+    setInterval(refresh, 30000);
+  </script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+*           text=auto eol=lf
+# Common file types in this project
+*.sh        text eol=lf
+*.yml       text eol=lf
+*.yaml      text eol=lf
+*.conf      text eol=lf
+*.sql       text eol=lf
+*.html      text eol=lf
+Dockerfile  text eol=lf
+# Windows-only scripts (if you add any later)
+*.bat       text eol=crlf
+*.cmd       text eol=crlf
+*.ps1       text eol=crlf
