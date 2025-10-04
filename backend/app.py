@@ -8,7 +8,7 @@ app = Flask(__name__)
 
 DB_HOST = os.getenv("DB_HOST", "db")
 DB_USER = os.getenv("DB_USER", "appuser")
-DB_PASSWORD = os.getenv("DB_PASSWORD", "apppass")
+DB_PASSWORD = os.getenv("DB_PASSWORD", "Ra9Dhura")
 DB_NAME = os.getenv("DB_NAME", "appdb")
 
 @app.get("/api")
